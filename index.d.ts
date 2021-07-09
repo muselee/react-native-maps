@@ -1,7 +1,7 @@
 declare module 'react-native-maps' {
   import * as React from 'react';
   import {
-    Animated,
+    Animated as RNAnimated,
     ImageRequireSource,
     ImageURISource,
     NativeSyntheticEvent,
@@ -46,12 +46,24 @@ declare module 'react-native-maps' {
     y: number;
   }
 
+  export type EventActionType =
+    | 'marker-press'
+    | 'polygon-press'
+    | 'polyline-press'
+    | 'callout-press'
+    | 'press'
+    | 'long-press'
+    | 'overlay-press'
+    | undefined;
+
   // helper interface
   export interface MapEvent<T = {}>
     extends NativeSyntheticEvent<
       T & {
         coordinate: LatLng;
         position: Point;
+        action: EventActionType;
+        id?: string;
       }
     > {}
 
@@ -63,7 +75,7 @@ declare module 'react-native-maps' {
   // =======================================================================
 
   interface AnimatedRegionTimingConfig
-    extends Animated.AnimationConfig,
+    extends RNAnimated.AnimationConfig,
       Partial<Region> {
     easing?: (value: number) => number;
     duration?: number;
@@ -71,7 +83,7 @@ declare module 'react-native-maps' {
   }
 
   interface AnimatedRegionSpringConfig
-    extends Animated.AnimationConfig,
+    extends RNAnimated.AnimationConfig,
       Partial<Region> {
     overshootClamping?: boolean;
     restDisplacementThreshold?: number;
@@ -86,11 +98,11 @@ declare module 'react-native-maps' {
     damping?: number;
   }
 
-  export class AnimatedRegion extends Animated.AnimatedWithChildren {
-    latitude: Animated.Value;
-    longitude: Animated.Value;
-    latitudeDelta: Animated.Value;
-    longitudeDelta: Animated.Value;
+  export class AnimatedRegion extends RNAnimated.AnimatedWithChildren {
+    latitude: RNAnimated.Value;
+    longitude: RNAnimated.Value;
+    latitudeDelta: RNAnimated.Value;
+    longitudeDelta: RNAnimated.Value;
 
     constructor(region?: Region);
 
@@ -100,8 +112,8 @@ declare module 'react-native-maps' {
     stopAnimation(callback?: (region: Region) => void): void;
     addListener(callback: (region: Region) => void): string;
     removeListener(id: string): void;
-    spring(config: AnimatedRegionSpringConfig): Animated.CompositeAnimation;
-    timing(config: AnimatedRegionTimingConfig): Animated.CompositeAnimation;
+    spring(config: AnimatedRegionSpringConfig): RNAnimated.CompositeAnimation;
+    timing(config: AnimatedRegionTimingConfig): RNAnimated.CompositeAnimation;
   }
 
   // =======================================================================
@@ -253,6 +265,7 @@ declare module 'react-native-maps' {
     compassOffset?: { x: number; y: number };
     tintColor?: string;
 
+    onMapLoaded?: () => void;
     onMapReady?: () => void;
     onKmlReady?: (values: KmlMapEvent) => void;
     onRegionChange?: (region: Region, details?: { isGesture: boolean }) => void;
@@ -479,7 +492,9 @@ declare module 'react-native-maps' {
     lineDashPattern?: number[];
   }
 
-  export class Circle extends React.Component<MapCircleProps, any> {}
+  export class Circle extends React.Component<MapCircleProps, any> {
+    setNativeProps: (props: any) => void;
+  }
 
   // =======================================================================
   //  UrlTile & LocalTile

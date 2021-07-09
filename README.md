@@ -236,7 +236,7 @@ See [OSM Wiki](https://wiki.openstreetmap.org/wiki/Category:Tile_downloading) fo
 
 ### Overlaying other components on the map
 
-Place components you that wish to overlay `MapView` underneath the `MapView` closing tag. Absolutely position these elements.
+Place components that you wish to overlay `MapView` underneath the `MapView` closing tag. Absolutely position these elements.
 
 ```jsx
 render() {
@@ -457,7 +457,7 @@ render() {
 Markers can also accept an `AnimatedRegion` value as a coordinate.
 
 ```jsx
-import Mapview, { AnimatedRegion, Marker } from 'react-native-maps';
+import Mapview, { AnimatedRegion, MarkerAnimated } from 'react-native-maps';
 
 getInitialState() {
   return {
@@ -491,44 +491,7 @@ componentWillReceiveProps(nextProps) {
 render() {
   return (
     <MapView initialRegion={...}>
-      <MapView.Marker.Animated
-        ref={marker => { this.marker = marker }}
-        coordinate={this.state.coordinate}
-      />
-    </MapView>
-  );
-}
-```
-
-If you need a smoother animation to move the marker on Android, you can modify the previous example:
-
-```jsx
-// ...
-
-componentWillReceiveProps(nextProps) {
-  const duration = 500
-
-  if (this.props.coordinate !== nextProps.coordinate) {
-    if (Platform.OS === 'android') {
-      if (this.marker) {
-        this.marker.animateMarkerToCoordinate(
-          nextProps.coordinate,
-          duration
-        );
-      }
-    } else {
-      this.state.coordinate.timing({
-        ...nextProps.coordinate,
-        duration
-      }).start();
-    }
-  }
-}
-
-render() {
-  return (
-    <MapView initialRegion={...}>
-      <Marker.Animated
+      <MarkerAnimated
         ref={marker => { this.marker = marker }}
         coordinate={this.state.coordinate}
       />
